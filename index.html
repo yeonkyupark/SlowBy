@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+
+  <!-- Content Security Policy -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self';
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' data: blob: https://tile.openstreetmap.org https://a.tile.opentopomap.org https://b.tile.opentopomap.org https://c.tile.opentopomap.org https://server.arcgisonline.com https://raw.githubusercontent.com;
+    connect-src 'self' https://api.github.com https://raw.githubusercontent.com;
+    font-src 'self';
+    object-src 'none';
+    base-uri 'self';
+    form-action 'none';
+  " />
+
+  <title>SlowBy (슬로비) — 사진으로 남기는 나만의 여행 아카이브</title>
+  <meta name="description" content="촬영한 사진의 위치와 시간 정보를 기반으로 지도 위에 여행 기록을 남기고 관리하는 모던 감성 여행 아카이브 서비스" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#0d9488" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#090d14" media="(prefers-color-scheme: dark)" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230d9488' stroke-width='2'><path d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/></svg>" />
+</head>
+<body>
+  <main id="app">
+    <p class="loading" style="padding: 24px; text-align: center; color: #64748b;">슬로비(SlowBy)를 불러오는 중…</p>
+  </main>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
