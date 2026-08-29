@@ -97,6 +97,7 @@ async function main() {
 
   // 지도 초기화
   const mapView = createMap(mapEl, {
+    getPhotoUrl: photoUrlResolver,
     onMarkerClick: (clickedLog) => {
       openTravelViewer({
         log: clickedLog,

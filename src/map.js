@@ -31,7 +31,7 @@ export const TILE_NAMES = Object.keys(TILE_PROVIDERS)
 const CLUSTER_PX = 36
 const MAX_CANDIDATES = 350
 
-export function createMap(containerEl, { onMarkerClick } = {}) {
+export function createMap(containerEl, { onMarkerClick, getPhotoUrl } = {}) {
   const map = L.map(containerEl, {
     center: [35.8, 127.8],
     zoom: 7,
@@ -84,12 +84,20 @@ export function createMap(containerEl, { onMarkerClick } = {}) {
     const imgWrap = document.createElement('div')
     imgWrap.className = 'pin-img-wrap'
 
-    const thumbUrl = log.remoteThumbUrl || (log.thumb ? URL.createObjectURL(log.thumb) : null)
+    const thumbUrl = log.thumb
+      ? URL.createObjectURL(log.thumb)
+      : log.remoteThumbUrl || getPhotoUrl?.(log, 'thumb') || getPhotoUrl?.(log, 'full')
+
     if (thumbUrl) {
       const img = document.createElement('img')
       img.src = thumbUrl
       img.alt = log.title || '사진'
       img.loading = 'lazy'
+      img.onerror = () => {
+        imgWrap.classList.add('is-fallback')
+        imgWrap.innerHTML = iconHtml(cat.icon, 18)
+        imgWrap.style.color = cat.color
+      }
       imgWrap.append(img)
     } else {
       imgWrap.classList.add('is-fallback')

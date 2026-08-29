@@ -15,25 +15,45 @@ import {
   getLastSyncedAt,
 } from './store.js'
 import { exportToDbSchema } from './schema.js'
+import { DEFAULT_SETTINGS } from './settings.js'
 
 const LOGS_PATH = 'public/data/travel_logs.json'
 const MAX_RETRIES = 3
 
 /**
- * 원격 사진 raw URL 조립
+ * 원격 사진 raw URL 조립 (공개 열람 모드 지원)
  * @param {object} settings
  * @param {object} log
  * @param {'full'|'thumb'} kind
  */
 export function getPhotoRawUrl(settings, log, kind) {
-  const p = log?.photo
+  const p = log?.photo ?? log?.photoUrl
   if (!p) return null
-  const path = p[kind]
-  if (path && settings?.owner && settings?.photoRepo) {
-    const enc = path.split('/').map(encodeURIComponent).join('/')
-    return `https://raw.githubusercontent.com/${settings.owner}/${settings.photoRepo}/${settings.branch || 'main'}/${enc}`
+
+  const owner = settings?.owner || DEFAULT_SETTINGS.owner
+  const photoRepo = settings?.photoRepo || DEFAULT_SETTINGS.photoRepo
+  const branch = settings?.branch || DEFAULT_SETTINGS.branch
+
+  // 1. p가 이미 URL 문자열인 경우
+  if (typeof p === 'string') {
+    if (p.startsWith('http://') || p.startsWith('https://') || p.startsWith('data:')) {
+      return p
+    }
+    const enc = p.split('/').map(encodeURIComponent).join('/')
+    return `https://raw.githubusercontent.com/${owner}/${photoRepo}/${branch}/${enc}`
   }
-  return p[`${kind}Url`] ?? null
+
+  // 2. p가 객체인 경우 ({ full, thumb, fullUrl, thumbUrl 등 })
+  const path = p[kind] || p[kind === 'thumb' ? 'full' : 'thumb']
+  if (path) {
+    if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:')) {
+      return path
+    }
+    const enc = path.split('/').map(encodeURIComponent).join('/')
+    return `https://raw.githubusercontent.com/${owner}/${photoRepo}/${branch}/${enc}`
+  }
+
+  return p[`${kind}Url`] ?? p.thumbUrl ?? p.fullUrl ?? p.url ?? null
 }
 
 export function createSyncEngine(getSettings) {
@@ -101,9 +121,11 @@ export function createSyncEngine(getSettings) {
    */
   async function pullPublicData() {
     const s = getSettings()
-    if (!s.owner || !s.repo) return { pulled: 0 }
+    const owner = s.owner || DEFAULT_SETTINGS.owner
+    const repo = s.repo || DEFAULT_SETTINGS.repo
+    const branch = s.branch || DEFAULT_SETTINGS.branch
 
-    const reader = createClient({ owner: s.owner, repo: s.repo, branch: s.branch })
+    const reader = createClient({ owner, repo, branch })
     const remote = await reader.readJson(LOGS_PATH).catch(() => null)
     if (!remote?.logs?.length) return { pulled: 0 }
 
