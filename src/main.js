@@ -135,12 +135,21 @@ async function main() {
     return b
   })
 
+  const triggerAutoSync = () => {
+    if (isAdmin) {
+      syncEngine.runSync().then(() => refreshData()).catch((e) => console.warn('Auto sync skipped:', e.message))
+    }
+  }
+
   function openEditorModal({ file = null, initialData = null } = {}) {
     openTravelEditor({
       file,
       initialData,
       mapView,
-      onSaved: () => refreshData(),
+      onSaved: () => {
+        refreshData()
+        triggerAutoSync()
+      },
     })
   }
 
@@ -156,6 +165,7 @@ async function main() {
           mapView,
           onSaved: () => {
             refreshData()
+            triggerAutoSync()
             resolve()
           },
           onCancelled: () => resolve(),
