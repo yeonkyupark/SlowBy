@@ -893,6 +893,35 @@ body {
   font-size: 12px;
 }
 
+.loc-source-tag {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--brand);
+  margin-left: 4px;
+}
+
+.rough-location-tip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #d97706;
+  background: #fffbeb;
+  border: 1px solid #fef3c7;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+@media (prefers-color-scheme: dark) {
+  .rough-location-tip {
+    color: #fbbf24;
+    background: rgba(217, 119, 6, 0.15);
+    border-color: rgba(217, 119, 6, 0.3);
+  }
+}
+
 .editor-extra {
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);

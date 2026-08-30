@@ -4,7 +4,7 @@
 
 import { CATEGORIES, WEATHERS, COMPANIONS, createTravelLogRecord } from './schema.js'
 import { readExif, processImage, formatDateTimeLocal } from './photos.js'
-import { saveTravelLog } from './store.js'
+import { saveTravelLog, getAllTravelLogs } from './store.js'
 import { iconEl, iconHtml } from './icons.js'
 
 export function openTravelEditor({
@@ -62,14 +62,43 @@ export function openTravelEditor({
       revokePreview = () => URL.revokeObjectURL(previewUrl)
 
       if (!draft.lat || !draft.lng) {
-        const picked = await promptLocationPick(file.name, exif, mapView)
-        if (!picked) {
-          cleanup()
-          return
+        // Rough 위치 추정 알고리즘 (촬영 날짜 근처 기록 > 현재 브라우저 GPS > 지도 중심 좌표)
+        const photoDateStr = draft.visitedAt ? draft.visitedAt.slice(0, 10) : ''
+        const allLogs = await getAllTravelLogs().catch(() => [])
+
+        // 1. 촬영 날짜와 동일하거나 가장 가까운 기록의 위치 탐색
+        let roughPos = null
+        let roughSource = 'map'
+        if (photoDateStr && allLogs.length > 0) {
+          const sameDayLog = allLogs.find((l) => l.lat && l.lng && (l.visitedAt || '').startsWith(photoDateStr))
+          if (sameDayLog) {
+            roughPos = [sameDayLog.lat, sameDayLog.lng]
+            roughSource = 'same_day_log'
+            if (!draft.address && sameDayLog.address) draft.address = sameDayLog.address
+            if (!draft.region && sameDayLog.region) draft.region = sameDayLog.region
+          }
         }
-        draft.lat = picked[0]
-        draft.lng = picked[1]
-        draft.locationSource = 'map'
+
+        // 2. 근처 기록이 없다면 브라우저 GPS 또는 지도 중심 좌표 활용
+        if (!roughPos) {
+          roughPos = await new Promise((resolve) => {
+            if (navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(
+                (pos) => resolve([pos.coords.latitude, pos.coords.longitude]),
+                () => resolve(mapView?.getCenter?.() || [35.8, 127.8]),
+                { enableHighAccuracy: true, timeout: 3000 },
+              )
+            } else {
+              resolve(mapView?.getCenter?.() || [35.8, 127.8])
+            }
+          })
+          roughSource = 'estimated'
+        }
+
+        draft.lat = roughPos[0]
+        draft.lng = roughPos[1]
+        draft.locationSource = roughSource
+        draft.isRoughLocation = true
       }
     } else if (initialData?.thumb) {
       previewUrl = URL.createObjectURL(initialData.thumb)
@@ -182,9 +211,26 @@ export function openTravelEditor({
 
     const locField = document.createElement('div')
     locField.className = 'form-row'
-    locField.innerHTML = `<span class="form-label">${iconHtml('location', 13)} 위치 좌표</span>`
+    
+    const isRough = draft.isRoughLocation || draft.locationSource === 'estimated' || draft.locationSource === 'same_day_log' || draft.locationSource === 'map'
+    const sourceLabel = draft.locationSource === 'exif' 
+      ? '(EXIF 자동 추출)' 
+      : isRough 
+        ? '(대략적 위치 - 보정 추천)' 
+        : ''
+    
+    locField.innerHTML = `<span class="form-label">${iconHtml('location', 13)} 위치 좌표 <small class="loc-source-tag">${sourceLabel}</small></span>`
+    
+    if (isRough && draft.locationSource !== 'exif') {
+      const roughTip = document.createElement('div')
+      roughTip.className = 'rough-location-tip'
+      roughTip.innerHTML = `${iconHtml('info', 13)} 사진에 EXIF 위치가 없어 <strong>대략적인 위치</strong>가 할당되었습니다. [지도에서 변경]을 눌러 핀을 보정해주세요.`
+      locField.append(roughTip)
+    }
+
     const locBox = document.createElement('div')
     locBox.className = 'loc-display'
+    
     const locText = document.createElement('span')
     locText.className = 'loc-text'
     locText.textContent = draft.lat && draft.lng
@@ -193,7 +239,7 @@ export function openTravelEditor({
 
     const pickBtn = document.createElement('button')
     pickBtn.type = 'button'
-    pickBtn.className = 'btn-sm'
+    pickBtn.className = 'btn-sm btn-pick-map'
     pickBtn.innerHTML = `${iconHtml('map', 12)} 지도에서 변경`
     pickBtn.onclick = async () => {
       box.style.display = 'none'
@@ -202,7 +248,9 @@ export function openTravelEditor({
       if (loc) {
         draft.lat = loc[0]
         draft.lng = loc[1]
-        locText.textContent = `${draft.lat.toFixed(5)}, ${draft.lng.toFixed(5)}`
+        draft.locationSource = 'map'
+        draft.isRoughLocation = false
+        renderForm()
       }
     }
     locBox.append(locText, pickBtn)

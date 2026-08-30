@@ -245,6 +245,11 @@ export function createMap(containerEl, { onMarkerClick, getPhotoUrl } = {}) {
       map.setView([lat, lng], zoom, { animate: true })
     },
 
+    getCenter() {
+      const c = map.getCenter()
+      return [c.lat, c.lng]
+    },
+
     pickLocation() {
       const container = map.getContainer()
       container.classList.add('is-picking-location')
