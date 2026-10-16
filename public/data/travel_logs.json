@@ -1,8 +1,36 @@
 {
  "version": 1,
  "appName": "SlowBy",
- "updatedAt": "2026-08-29T16:15:51.148Z",
+ "updatedAt": "2026-10-16T23:36:03.138Z",
  "logs": [
+  {
+   "id": "8293674c-516d-4400-937a-1af4a26a3d09",
+   "createdAt": "2026-10-16T23:35:34.520Z",
+   "updatedAt": "2026-10-16T23:35:53.236Z",
+   "deleted": false,
+   "visitedAt": "2026-10-17T08:35",
+   "category": "spot",
+   "title": "비산동 산책길",
+   "memo": "",
+   "rating": 0,
+   "lat": 36.1257894,
+   "lng": 128.3810095,
+   "address": "",
+   "locationName": "",
+   "region": "",
+   "locationSource": "estimated",
+   "cost": null,
+   "costCurrency": "KRW",
+   "companion": "",
+   "weather": "",
+   "tags": [],
+   "photo": {
+    "full": "travel/2026/8293674c-516d-4400-937a-1af4a26a3d09.jpg",
+    "thumb": "travel/2026/8293674c-516d-4400-937a-1af4a26a3d09_t.jpg",
+    "fullUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/8293674c-516d-4400-937a-1af4a26a3d09.jpg",
+    "thumbUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/8293674c-516d-4400-937a-1af4a26a3d09_t.jpg"
+   }
+  },
   {
    "id": "e0294dd6-bdd2-4352-8674-2c812148aa81",
    "createdAt": "2026-08-29T16:14:45.722Z",
