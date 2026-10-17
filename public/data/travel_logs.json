@@ -1,7 +1,7 @@
 {
  "version": 1,
  "appName": "SlowBy",
- "updatedAt": "2026-10-17T11:01:16.472Z",
+ "updatedAt": "2026-10-17T12:07:52.578Z",
  "logs": [
   {
    "id": "04e4d9e5-ca53-45ee-823e-9d46e35963f5",
@@ -99,10 +99,10 @@
   {
    "id": "f8ccaa7e-67ce-4c9a-99cb-64c10252c605",
    "createdAt": "2026-10-17T10:31:07.881Z",
-   "updatedAt": "2026-10-17T10:33:31.751Z",
+   "updatedAt": "2026-10-17T12:07:51.515Z",
    "deleted": false,
    "visitedAt": "2026-10-03T08:16",
-   "category": "spot",
+   "category": "activity",
    "title": "부포 사거리 (내부포 정류소)",
    "memo": "남파랑길 31코스 종점",
    "rating": 0,
@@ -117,12 +117,6 @@
    "companion": "",
    "weather": "",
    "tags": [],
-   "photo": {
-    "full": "travel/2026/f8ccaa7e-67ce-4c9a-99cb-64c10252c605.jpg",
-    "thumb": "travel/2026/f8ccaa7e-67ce-4c9a-99cb-64c10252c605_t.jpg",
-    "fullUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/f8ccaa7e-67ce-4c9a-99cb-64c10252c605.jpg",
-    "thumbUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/f8ccaa7e-67ce-4c9a-99cb-64c10252c605_t.jpg"
-   },
    "photos": [
     {
      "full": "travel/2026/f8ccaa7e-67ce-4c9a-99cb-64c10252c605.jpg",
@@ -131,7 +125,13 @@
      "thumbUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/f8ccaa7e-67ce-4c9a-99cb-64c10252c605_t.jpg",
      "id": "f8ccaa7e-67ce-4c9a-99cb-64c10252c605"
     }
-   ]
+   ],
+   "photo": {
+    "full": "travel/2026/f8ccaa7e-67ce-4c9a-99cb-64c10252c605.jpg",
+    "thumb": "travel/2026/f8ccaa7e-67ce-4c9a-99cb-64c10252c605_t.jpg",
+    "fullUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/f8ccaa7e-67ce-4c9a-99cb-64c10252c605.jpg",
+    "thumbUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/f8ccaa7e-67ce-4c9a-99cb-64c10252c605_t.jpg"
+   }
   },
   {
    "id": "e0294dd6-bdd2-4352-8674-2c812148aa81",
