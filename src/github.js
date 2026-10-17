@@ -68,6 +68,14 @@ export function createClient(cfg) {
     return body
   }
 
+  /**
+   * 쓰기 직전 읽기용 URL. `t` 는 캐시 무력화용이다.
+   * 브라우저 no-store 만으로는 부족하다 — GitHub 쪽이 같은 URL 에 대해 커밋 직후
+   * 한동안 이전 sha 를 돌려줄 때가 있어, 그 sha 로 PUT 하면 409 "does not match" 가 난다.
+   */
+  const freshContentsUrl = (path) =>
+    `${contentsPath(path)}?ref=${encodeURIComponent(branch)}&t=${Date.now()}`
+
   const contentsPath = (path) =>
     `/repos/${cfg.owner}/${cfg.repo}/contents/${path.split('/').map(encodeURIComponent).join('/')}`
 
@@ -103,7 +111,7 @@ export function createClient(cfg) {
     async getFileJson(path) {
       let r
       try {
-        r = await api(`${contentsPath(path)}?ref=${encodeURIComponent(branch)}`, {
+        r = await api(freshContentsUrl(path), {
           cache: 'no-store',
         })
       } catch (e) {
@@ -127,7 +135,7 @@ export function createClient(cfg) {
       try {
         // no-store: 브라우저 HTTP 캐시(max-age=60)가 방금 올린 파일을 "없음"으로 답하면
         // sha 없이 PUT 해서 422 "sha wasn't supplied" 가 난다.
-        const r = await api(`${contentsPath(path)}?ref=${encodeURIComponent(branch)}`, {
+        const r = await api(freshContentsUrl(path), {
           cache: 'no-store',
         })
         return r?.sha ?? null

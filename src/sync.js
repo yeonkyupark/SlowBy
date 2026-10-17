@@ -18,7 +18,8 @@ import { exportToDbSchema } from './schema.js'
 import { DEFAULT_SETTINGS } from './settings.js'
 
 const LOGS_PATH = 'public/data/travel_logs.json'
-const MAX_RETRIES = 3
+const MAX_RETRIES = 4
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
 /**
  * 원격 사진 raw URL 조립 (공개 열람 모드 지원)
@@ -197,7 +198,11 @@ export function createSyncEngine(getSettings) {
           })
           break
         } catch (e) {
-          if (attempt === MAX_RETRIES - 1) throw e
+          // 409(sha 불일치)·422(sha 누락)는 읽은 sha 가 낡았다는 뜻 — 잠시 뒤 다시 읽어 병합한다.
+          // 그 외 오류(권한 등)는 재시도해도 같으므로 바로 던진다.
+          const conflict = e.status === 409 || (e.status === 422 && /sha/i.test(e.message))
+          if (!conflict || attempt === MAX_RETRIES - 1) throw e
+          await sleep(1000 * 2 ** attempt)
         }
       }
 
