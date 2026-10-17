@@ -163,7 +163,7 @@ export function createSyncEngine(getSettings) {
       let merged = null
 
       for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-        const head = await mainClient.getFileJson(LOGS_PATH).catch(() => null)
+        const head = await mainClient.getFileJson(LOGS_PATH) // catch 제거: 404만 null 반환
         const sha = head?.sha ?? null
         const remote = head?.json ?? null
 
