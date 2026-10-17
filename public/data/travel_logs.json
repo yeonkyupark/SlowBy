@@ -1,7 +1,7 @@
 {
  "version": 1,
  "appName": "SlowBy",
- "updatedAt": "2026-10-17T10:33:35.818Z",
+ "updatedAt": "2026-10-17T11:01:16.472Z",
  "logs": [
   {
    "id": "04e4d9e5-ca53-45ee-823e-9d46e35963f5",
@@ -85,7 +85,16 @@
     "thumb": "travel/2026/8293674c-516d-4400-937a-1af4a26a3d09_t.jpg",
     "fullUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/8293674c-516d-4400-937a-1af4a26a3d09.jpg",
     "thumbUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/8293674c-516d-4400-937a-1af4a26a3d09_t.jpg"
-   }
+   },
+   "photos": [
+    {
+     "full": "travel/2026/8293674c-516d-4400-937a-1af4a26a3d09.jpg",
+     "thumb": "travel/2026/8293674c-516d-4400-937a-1af4a26a3d09_t.jpg",
+     "fullUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/8293674c-516d-4400-937a-1af4a26a3d09.jpg",
+     "thumbUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/8293674c-516d-4400-937a-1af4a26a3d09_t.jpg",
+     "id": "8293674c-516d-4400-937a-1af4a26a3d09"
+    }
+   ]
   },
   {
    "id": "f8ccaa7e-67ce-4c9a-99cb-64c10252c605",
@@ -113,7 +122,16 @@
     "thumb": "travel/2026/f8ccaa7e-67ce-4c9a-99cb-64c10252c605_t.jpg",
     "fullUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/f8ccaa7e-67ce-4c9a-99cb-64c10252c605.jpg",
     "thumbUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/f8ccaa7e-67ce-4c9a-99cb-64c10252c605_t.jpg"
-   }
+   },
+   "photos": [
+    {
+     "full": "travel/2026/f8ccaa7e-67ce-4c9a-99cb-64c10252c605.jpg",
+     "thumb": "travel/2026/f8ccaa7e-67ce-4c9a-99cb-64c10252c605_t.jpg",
+     "fullUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/f8ccaa7e-67ce-4c9a-99cb-64c10252c605.jpg",
+     "thumbUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/f8ccaa7e-67ce-4c9a-99cb-64c10252c605_t.jpg",
+     "id": "f8ccaa7e-67ce-4c9a-99cb-64c10252c605"
+    }
+   ]
   },
   {
    "id": "e0294dd6-bdd2-4352-8674-2c812148aa81",
@@ -141,7 +159,16 @@
     "thumb": "travel/2026/e0294dd6-bdd2-4352-8674-2c812148aa81_t.jpg",
     "fullUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/e0294dd6-bdd2-4352-8674-2c812148aa81.jpg",
     "thumbUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/e0294dd6-bdd2-4352-8674-2c812148aa81_t.jpg"
-   }
+   },
+   "photos": [
+    {
+     "full": "travel/2026/e0294dd6-bdd2-4352-8674-2c812148aa81.jpg",
+     "thumb": "travel/2026/e0294dd6-bdd2-4352-8674-2c812148aa81_t.jpg",
+     "fullUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/e0294dd6-bdd2-4352-8674-2c812148aa81.jpg",
+     "thumbUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/e0294dd6-bdd2-4352-8674-2c812148aa81_t.jpg",
+     "id": "e0294dd6-bdd2-4352-8674-2c812148aa81"
+    }
+   ]
   },
   {
    "id": "3b8dfd7b-d774-46df-9cc3-b1abf83f693d",
@@ -169,7 +196,16 @@
     "thumb": "travel/2026/3b8dfd7b-d774-46df-9cc3-b1abf83f693d_t.jpg",
     "fullUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/3b8dfd7b-d774-46df-9cc3-b1abf83f693d.jpg",
     "thumbUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/3b8dfd7b-d774-46df-9cc3-b1abf83f693d_t.jpg"
-   }
+   },
+   "photos": [
+    {
+     "full": "travel/2026/3b8dfd7b-d774-46df-9cc3-b1abf83f693d.jpg",
+     "thumb": "travel/2026/3b8dfd7b-d774-46df-9cc3-b1abf83f693d_t.jpg",
+     "fullUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/3b8dfd7b-d774-46df-9cc3-b1abf83f693d.jpg",
+     "thumbUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/3b8dfd7b-d774-46df-9cc3-b1abf83f693d_t.jpg",
+     "id": "3b8dfd7b-d774-46df-9cc3-b1abf83f693d"
+    }
+   ]
   }
  ]
 }
