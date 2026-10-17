@@ -147,7 +147,14 @@ export function renderStatsDashboard(containerEl, { onDataImported } = {}) {
       zipBtn.disabled = true
       zipBtn.textContent = '압축 중…'
       try {
-        await exportToZip()
+        const { missing } = await exportToZip({
+          onProgress: (done, total) => {
+            zipBtn.textContent = total ? `사진 받는 중… ${done}/${total}` : '압축 중…'
+          },
+        })
+        if (missing) alert(`사진 ${missing}장을 받지 못해 백업에서 빠졌습니다. 네트워크를 확인한 뒤 다시 시도해주세요.`)
+      } catch (err) {
+        alert(`ZIP 백업 실패: ${err.message}`)
       } finally {
         zipBtn.disabled = false
         zipBtn.innerHTML = `${iconHtml('download', 13)} <span>ZIP 전체 백업</span>`

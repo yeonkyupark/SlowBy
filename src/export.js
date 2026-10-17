@@ -7,6 +7,8 @@
 
 import { getAllTravelLogs, getPhotoBlobs, saveTravelLog } from './store.js'
 import { exportToDbSchema, CATEGORIES, photoList } from './schema.js'
+import { getPhotoRawUrl } from './sync.js'
+import { loadSettings } from './settings.js'
 
 /**
  * JSON 파일로 다운로드 (DB 이관용 표준 덤프)
@@ -77,29 +79,63 @@ export async function exportToCsv() {
   downloadBlob(blob, `slowby_travel_logs_${new Date().toISOString().slice(0, 10)}.csv`)
 }
 
+/** 내용으로 확장자를 정한다. 업로드 파일은 이름이 `.jpg` 여도 내용은 대개 WebP 다. */
+function imageExt(bytes) {
+  const tag = String.fromCharCode(...bytes.subarray(8, 12))
+  if (tag === 'WEBP') return 'webp'
+  if (bytes[0] === 0x89 && bytes[1] === 0x50) return 'png'
+  return 'jpg'
+}
+
 /**
- * ZIP 파일로 내보내기 (JSON 데이터 + 고해상도 원본 사진 일체 포함)
+ * 사진 1장의 바이트. 로컬(아직 업로드 전)에 있으면 그것을, 없으면 사진 리포에서 받는다.
+ * 동기화가 끝난 사진은 로컬에서 지워지므로 대부분 원격에서 온다.
  */
-export async function exportToZip() {
+async function photoBytes(entry, settings) {
+  const local = (await getPhotoBlobs(entry.id).catch(() => null))?.blob
+  if (local) return new Uint8Array(await local.arrayBuffer())
+  const url = getPhotoRawUrl(settings, { photo: entry }, 'full')
+  if (!url) return null
+  const res = await fetch(url, { cache: 'no-store' }).catch(() => null)
+  return res?.ok ? new Uint8Array(await res.arrayBuffer()) : null
+}
+
+/**
+ * ZIP 파일로 내보내기 (JSON 데이터 + 기록의 모든 사진)
+ * @param {{onProgress?: (done: number, total: number) => void}} [opts]
+ * @returns {Promise<{photos: number, missing: number}>}
+ */
+export async function exportToZip({ onProgress } = {}) {
   const { zip } = await import('fflate')
   const logs = await getAllTravelLogs()
   const dbData = exportToDbSchema(logs)
+  const settings = loadSettings()
 
   const zipEntries = {}
   zipEntries['travel_logs.json'] = new TextEncoder().encode(
     JSON.stringify({ appName: 'SlowBy', logs: dbData }, null, 2),
   )
 
-  for (const log of logs) {
-    const year = (log.visitedAt || 'misc').slice(0, 4)
-    for (const entry of photoList(log)) {
-      const photoBlob = (await getPhotoBlobs(entry.id))?.blob
-      if (!photoBlob) continue
-      zipEntries[`photos/${year}/${entry.id}.jpg`] = new Uint8Array(await photoBlob.arrayBuffer())
-    }
-  }
+  const jobs = logs.flatMap((log) =>
+    photoList(log).map((entry) => ({ entry, year: (log.visitedAt || 'misc').slice(0, 4) })),
+  )
+  let done = 0
+  let missing = 0
+  onProgress?.(0, jobs.length)
+  // 동시에 4장씩 받는다 — 순서대로 받으면 사진이 많을 때 너무 느리다.
+  const queue = [...jobs]
+  await Promise.all(
+    Array.from({ length: 4 }, async () => {
+      for (let job = queue.shift(); job; job = queue.shift()) {
+        const bytes = await photoBytes(job.entry, settings)
+        if (bytes) zipEntries[`photos/${job.year}/${job.entry.id}.${imageExt(bytes)}`] = bytes
+        else missing++
+        onProgress?.(++done, jobs.length)
+      }
+    }),
+  )
 
-  return new Promise((resolve, reject) => {
+  await new Promise((resolve, reject) => {
     zip(zipEntries, { level: 0 }, (err, data) => {
       if (err) return reject(err)
       const blob = new Blob([data], { type: 'application/zip' })
@@ -107,6 +143,7 @@ export async function exportToZip() {
       resolve()
     })
   })
+  return { photos: jobs.length - missing, missing }
 }
 
 /**

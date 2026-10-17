@@ -11,6 +11,7 @@ import {
   getAllTravelLogsRaw,
   putTravelLogRaw,
   getPhotoBlobs,
+  deletePhotoBlobs,
   setLastSyncedAt,
   getLastSyncedAt,
 } from './store.js'
@@ -92,6 +93,14 @@ export function createSyncEngine(getSettings) {
    *
    * 사진마다 파일이 따로다: `{prefix}/{year}/{사진 id}.jpg` 와 `_t.jpg`.
    * 사진 id 는 교체할 때마다 새로 발급되므로 같은 경로를 덮어쓸 일이 없다.
+   *
+   * 내용은 대개 WebP 지만 확장자는 `.jpg` 로 둔다. raw.githubusercontent 는 확장자로
+   * Content-Type 을 정하는데 `.webp` 는 `application/octet-stream` + nosniff 로 나가
+   * Safari 가 이미지로 표시하지 않는다. `.jpg`(image/jpeg) 로 주면 모든 브라우저가
+   * 내용을 보고 WebP 로 디코딩한다.
+   *
+   * 원격에 있는 것이 확인된 사진은 로컬 Blob 을 지운다. 로컬은 업로드 대기열일 뿐이라
+   * 기록이 늘어도 브라우저 저장소가 커지지 않는다. 화면은 원격 URL 로 보여 준다.
    */
   async function uploadPhotos(photoClient, logs, prefix = 'travel') {
     if (!photoClient) return { uploaded: 0, skipped: 0 }
@@ -111,6 +120,7 @@ export function createSyncEngine(getSettings) {
       const year = (log.visitedAt || log.createdAt || 'misc').slice(0, 4)
       const entries = photoList(log)
       let changed = false
+      const uploadedIds = [] // 원본·썸네일 모두 원격에 있는 사진 — 로컬에서 비운다
 
       for (const [i, entry] of entries.entries()) {
         const local = await getPhotoBlobs(entry.id)
@@ -133,6 +143,12 @@ export function createSyncEngine(getSettings) {
         if (fullUpload.skipped && thumbUpload.skipped) skipped++
         else uploaded++
 
+        // putIfMissing 이 path 를 돌려줬으면 올렸거나 이미 있던 것이다.
+        const onRemote = (upload, path) => Boolean(upload.path) || Boolean(existing?.has(path))
+        if (onRemote(fullUpload, paths.full) && onRemote(thumbUpload, paths.thumb)) {
+          uploadedIds.push(entry.id)
+        }
+
         const next = {
           ...entry,
           ...paths,
@@ -145,11 +161,14 @@ export function createSyncEngine(getSettings) {
         }
       }
 
-      if (changed || (entries.length && !log.photos?.length)) {
+      const coverUploaded = uploadedIds.includes(entries[0]?.id) && log.thumb
+      if (changed || coverUploaded || (entries.length && !log.photos?.length)) {
         log.photos = entries
         log.photo = photoMirror(entries[0])
+        if (coverUploaded) log.thumb = null
         await putTravelLogRaw(log)
       }
+      await deletePhotoBlobs(uploadedIds)
     }
 
     return { uploaded, skipped }

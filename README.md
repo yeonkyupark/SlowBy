@@ -49,6 +49,7 @@
 - **ZIP Backup**: `fflate` (지연 로딩)
 - **Database / Cache**: IndexedDB (오프라인 1차 로컬 스토리지)
 - **Hosting / Storage**: GitHub Pages + GitHub Contents API
+- **사진 저장**: 업로드 전 1024px WebP(미지원 브라우저는 JPEG)로 축소·EXIF 제거, 업로드 후 로컬 사본 삭제 — 남은 경량화 작업은 [docs/REFACTORING.md](docs/REFACTORING.md)
 
 ---
 
