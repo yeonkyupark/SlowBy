@@ -2,7 +2,7 @@
  * SlowBy (슬로비) — 사이드바 여행 타임라인 피드 및 모바일 바텀시트
  */
 
-import { CATEGORIES } from './schema.js'
+import { CATEGORIES, photoList } from './schema.js'
 import { renderStatsDashboard } from './stats.js'
 import { iconEl, iconHtml } from './icons.js'
 
@@ -309,6 +309,14 @@ export function createSidebar({
           thumbWrap.classList.add('is-fallback')
           thumbWrap.style.color = cat.color
           thumbWrap.innerHTML = iconHtml(cat.icon, 24)
+        }
+        const photoCount = photoList(log).length
+        if (photoCount > 1) {
+          const countBadge = document.createElement('span')
+          countBadge.className = 'card-photo-count'
+          countBadge.textContent = `+${photoCount - 1}`
+          countBadge.title = `사진 ${photoCount}장`
+          thumbWrap.append(countBadge)
         }
         card.append(thumbWrap)
 

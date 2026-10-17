@@ -2,8 +2,8 @@
  * SlowBy (슬로비) — 여행 기록 상세 뷰어 및 갤러리 모달 (Ambient Backdrop & Dynamic Aspect Ratio)
  */
 
-import { CATEGORIES } from './schema.js'
-import { getTravelPhotoBlob, deleteTravelLog } from './store.js'
+import { CATEGORIES, photoList } from './schema.js'
+import { getPhotoBlobs, deleteTravelLog } from './store.js'
 import { iconEl, iconHtml } from './icons.js'
 
 export function openTravelViewer({
@@ -25,6 +25,7 @@ export function openTravelViewer({
   box.className = 'modal viewer-modal'
 
   let currentBlobUrl = null
+  let photoIndex = 0 // 현재 기록 안에서 보고 있는 사진
   let isCoverMode = false // false: contain (원본 비율 맞춤), true: cover (화면 꽉 채우기)
 
   const cleanup = () => {
@@ -35,15 +36,28 @@ export function openTravelViewer({
 
   const onKey = (e) => {
     if (e.key === 'Escape') cleanup()
-    else if (e.key === 'ArrowLeft') step(-1)
-    else if (e.key === 'ArrowRight') step(1)
+    else if (e.key === 'ArrowLeft') stepPhoto(-1)
+    else if (e.key === 'ArrowRight') stepPhoto(1)
   }
   document.addEventListener('keydown', onKey)
 
   const step = (dir) => {
     if (logsList.length <= 1) return
     currentIndex = (currentIndex + dir + logsList.length) % logsList.length
+    photoIndex = 0
     renderCurrent()
+  }
+
+  /** 기록 안의 사진을 넘기고, 끝에 닿으면 이웃 기록으로 넘어간다. */
+  const stepPhoto = (dir) => {
+    const count = photoList(logsList[currentIndex]).length
+    const next = photoIndex + dir
+    if (next >= 0 && next < count) {
+      photoIndex = next
+      renderCurrent()
+    } else {
+      step(dir)
+    }
   }
 
   async function renderCurrent() {
@@ -105,16 +119,33 @@ export function openTravelViewer({
     img.className = 'viewer-img'
     img.alt = currentLog.title || '여행 사진'
 
-    const photoBlob = await getTravelPhotoBlob(currentLog.id)
+    const photos = photoList(currentLog)
+    photoIndex = Math.min(photoIndex, Math.max(0, photos.length - 1))
+    const entry = photos[photoIndex]
+    const local = entry ? await getPhotoBlobs(entry.id).catch(() => null) : null
+    // 이전 버전 데이터는 대표 썸네일이 기록 자체에 있다.
+    const localThumb = local?.thumb ?? (photoIndex === 0 ? currentLog.thumb : null)
+    const remoteSrc = entry
+      ? getPhotoUrl?.({ photo: entry }, 'full') || getPhotoUrl?.({ photo: entry }, 'thumb')
+      : null
     let photoSrc = null
-    if (photoBlob) {
-      currentBlobUrl = URL.createObjectURL(photoBlob)
+    if (local?.blob) {
+      currentBlobUrl = URL.createObjectURL(local.blob)
       photoSrc = currentBlobUrl
-    } else if (currentLog.thumb) {
-      currentBlobUrl = URL.createObjectURL(currentLog.thumb)
+    } else if (remoteSrc) {
+      photoSrc = remoteSrc
+      // 아직 업로드 전이면 원격 파일이 없다 — 로컬 썸네일로 대신한다.
+      if (localThumb) {
+        img.onerror = () => {
+          img.onerror = null
+          currentBlobUrl = URL.createObjectURL(localThumb)
+          img.src = currentBlobUrl
+          ambientBg.style.backgroundImage = `url("${currentBlobUrl}")`
+        }
+      }
+    } else if (localThumb) {
+      currentBlobUrl = URL.createObjectURL(localThumb)
       photoSrc = currentBlobUrl
-    } else {
-      photoSrc = getPhotoUrl?.(currentLog, 'full') || getPhotoUrl?.(currentLog, 'thumb')
     }
 
     if (photoSrc) {
@@ -154,14 +185,36 @@ export function openTravelViewer({
       mediaWrap.innerHTML = `<div class="media-placeholder" style="color: ${cat.color}">${iconHtml(cat.icon, 48)}</div>`
     }
 
-    // 좌우 내비게이션 화살표
-    if (logsList.length > 1) {
+    // 사진 위치 표시 (여러 장일 때)
+    if (photos.length > 1) {
+      const dots = document.createElement('div')
+      dots.className = 'viewer-photo-dots'
+      photos.forEach((_, i) => {
+        const d = document.createElement('button')
+        d.type = 'button'
+        d.className = `viewer-photo-dot${i === photoIndex ? ' is-active' : ''}`
+        d.setAttribute('aria-label', `사진 ${i + 1}`)
+        d.onclick = (e) => {
+          e.stopPropagation()
+          photoIndex = i
+          renderCurrent()
+        }
+        dots.append(d)
+      })
+      const counter = document.createElement('span')
+      counter.className = 'viewer-photo-counter'
+      counter.textContent = `${photoIndex + 1} / ${photos.length}`
+      mediaWrap.append(dots, counter)
+    }
+
+    // 좌우 내비게이션 화살표 — 기록 안의 사진을 먼저 넘기고, 끝에서 다음 기록으로
+    if (logsList.length > 1 || photos.length > 1) {
       const prevBtn = document.createElement('button')
       prevBtn.className = 'viewer-arrow viewer-prev'
       prevBtn.append(iconEl('chevronLeft', 20))
       prevBtn.onclick = (e) => {
         e.stopPropagation()
-        step(-1)
+        stepPhoto(-1)
       }
 
       const nextBtn = document.createElement('button')
@@ -169,7 +222,7 @@ export function openTravelViewer({
       nextBtn.append(iconEl('chevronRight', 20))
       nextBtn.onclick = (e) => {
         e.stopPropagation()
-        step(1)
+        stepPhoto(1)
       }
 
       mediaWrap.append(prevBtn, nextBtn)

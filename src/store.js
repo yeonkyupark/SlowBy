@@ -6,7 +6,7 @@
  * 마이그레이션이 용이하도록 표준화된 인터페이스를 제공합니다.
  */
 
-import { createTravelLogRecord, CATEGORIES } from './schema.js'
+import { createTravelLogRecord, CATEGORIES, photoList } from './schema.js'
 
 const DB_NAME = 'slowby_travel'
 const DB_VERSION = 1
@@ -71,6 +71,34 @@ export async function saveTravelLog(logData, photoBlob = null) {
 }
 
 /**
+ * 사진 Blob 들을 저장한다. 사진마다 행 하나 — `{ id: 사진 id, blob: 원본, thumb: 썸네일 }`.
+ * @param {Array<{id: string, blob: Blob|null, thumb: Blob|null}>} rows
+ */
+export async function savePhotoBlobs(rows) {
+  if (!rows.length) return
+  await runTx(STORE_PHOTOS, 'readwrite', (s) => {
+    for (const r of rows) s.put({ id: r.id, blob: r.blob ?? null, thumb: r.thumb ?? null })
+  })
+}
+
+/** @param {string[]} ids */
+export async function deletePhotoBlobs(ids) {
+  if (!ids.length) return
+  await runTx(STORE_PHOTOS, 'readwrite', (s) => {
+    for (const id of ids) s.delete(id)
+  })
+}
+
+/**
+ * 사진 1장의 로컬 Blob. 이전 버전 행에는 thumb 가 없다(기록의 `thumb` 에 있었다).
+ * @returns {Promise<{blob: Blob|null, thumb: Blob|null}|null>}
+ */
+export async function getPhotoBlobs(photoId) {
+  const row = await runTx(STORE_PHOTOS, 'readonly', (s) => s.get(photoId))
+  return row ? { blob: row.blob ?? null, thumb: row.thumb ?? null } : null
+}
+
+/**
  * 삭제되지 않은 활성 여행 기록 전체 조회 (방문일시 내림차순 정렬)
  * @returns {Promise<Array<object>>}
  */
@@ -90,30 +118,26 @@ export async function getTravelLog(id) {
 }
 
 /**
- * 원본 사진 Blob 조회
- * @param {string} id
- * @returns {Promise<Blob|null>}
- */
-export async function getTravelPhotoBlob(id) {
-  const row = await runTx(STORE_PHOTOS, 'readonly', (s) => s.get(id))
-  return row?.blob ?? null
-}
-
-/**
  * 여행 기록 소프트 삭제
  * @param {string} id
  */
 export async function deleteTravelLog(id) {
   const rec = await getTravelLog(id)
   if (!rec) return
+  const photos = photoList(rec)
+  const remotePaths = photos.flatMap((p) => [p.full, p.thumb]).filter(Boolean)
   const updated = {
     ...rec,
     deleted: true,
     thumb: null,
+    photos: [],
+    photo: null,
+    // 사진 리포의 파일은 다음 동기화 때 지운다.
+    pendingDeletes: [...new Set([...(rec.pendingDeletes ?? []), ...remotePaths])],
     updatedAt: new Date().toISOString(),
   }
   await runTx(STORE_LOGS, 'readwrite', (s) => s.put(updated))
-  await runTx(STORE_PHOTOS, 'readwrite', (s) => s.delete(id))
+  await deletePhotoBlobs([...new Set([id, ...photos.map((p) => p.id)])])
 }
 
 /**

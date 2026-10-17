@@ -10,11 +10,11 @@ import { createClient } from './github.js'
 import {
   getAllTravelLogsRaw,
   putTravelLogRaw,
-  getTravelPhotoBlob,
+  getPhotoBlobs,
   setLastSyncedAt,
   getLastSyncedAt,
 } from './store.js'
-import { exportToDbSchema } from './schema.js'
+import { exportToDbSchema, photoList, photoMirror } from './schema.js'
 import { DEFAULT_SETTINGS } from './settings.js'
 
 const LOGS_PATH = 'public/data/travel_logs.json'
@@ -57,6 +57,20 @@ export function getPhotoRawUrl(settings, log, kind) {
   return p[`${kind}Url`] ?? p.thumbUrl ?? p.fullUrl ?? p.url ?? null
 }
 
+/**
+ * 원격 기록을 로컬 위에 덮는다. 로컬 전용 필드(thumb, pendingDeletes)는 지키되,
+ * 다른 기기에서 대표 사진이 바뀌었으면 로컬 썸네일은 낡았으므로 버린다.
+ */
+function mergeRemote(local, remote) {
+  const sameCover = photoList(local)[0]?.id === photoList(remote)[0]?.id
+  return {
+    ...(local || {}),
+    ...remote,
+    thumb: sameCover ? local?.thumb || null : null,
+    pendingDeletes: local?.pendingDeletes ?? [],
+  }
+}
+
 export function createSyncEngine(getSettings) {
   const listeners = new Set()
   const emit = (state) => listeners.forEach((fn) => fn(state))
@@ -73,48 +87,101 @@ export function createSyncEngine(getSettings) {
     return { mainClient, photoClient, settings: s }
   }
 
-  /** 사진 파일들을 photo-repo에 업로드 */
+  /**
+   * 로컬에만 있는 사진을 photo-repo 에 올리고, 기록의 `photos`/`photo` 에 원격 경로를 채운다.
+   *
+   * 사진마다 파일이 따로다: `{prefix}/{year}/{사진 id}.jpg` 와 `_t.jpg`.
+   * 사진 id 는 교체할 때마다 새로 발급되므로 같은 경로를 덮어쓸 일이 없다.
+   */
   async function uploadPhotos(photoClient, logs, prefix = 'travel') {
     if (!photoClient) return { uploaded: 0, skipped: 0 }
 
     let uploaded = 0
     let skipped = 0
+    // 리포 전체 경로를 한 번에 받아 두면 사진마다 존재 확인 요청을 보내지 않아도 된다.
+    const existing = await photoClient.listPaths().catch(() => null)
+    const putIfMissing = (path, blob, message) =>
+      existing?.has(path)
+        ? { skipped: true, path }
+        : photoClient.putBlobIfAbsent(path, blob, message)
 
     for (const log of logs) {
       if (log.deleted) continue
 
       const year = (log.visitedAt || log.createdAt || 'misc').slice(0, 4)
-      const paths = {
-        full: `${prefix}/${year}/${log.id}.jpg`,
-        thumb: `${prefix}/${year}/${log.id}_t.jpg`,
+      const entries = photoList(log)
+      let changed = false
+
+      for (const [i, entry] of entries.entries()) {
+        const local = await getPhotoBlobs(entry.id)
+        const fullBlob = local?.blob ?? null
+        // 이전 버전 데이터는 대표 썸네일이 기록 자체에 있다.
+        const thumbBlob = local?.thumb ?? (i === 0 ? log.thumb : null) ?? null
+        if (!fullBlob && !thumbBlob) continue // 원격에만 있는 사진
+
+        const paths = {
+          full: entry.full || `${prefix}/${year}/${entry.id}.jpg`,
+          thumb: entry.thumb || `${prefix}/${year}/${entry.id}_t.jpg`,
+        }
+        const fullUpload = fullBlob
+          ? await putIfMissing(paths.full, fullBlob, `Upload photo ${entry.id}`)
+          : { skipped: true }
+        const thumbUpload = thumbBlob
+          ? await putIfMissing(paths.thumb, thumbBlob, `Upload thumb ${entry.id}`)
+          : { skipped: true }
+
+        if (fullUpload.skipped && thumbUpload.skipped) skipped++
+        else uploaded++
+
+        const next = {
+          ...entry,
+          ...paths,
+          fullUrl: photoClient.rawUrl(paths.full),
+          thumbUrl: photoClient.rawUrl(paths.thumb),
+        }
+        if (next.full !== entry.full || next.thumb !== entry.thumb || next.fullUrl !== entry.fullUrl) {
+          entries[i] = next
+          changed = true
+        }
       }
 
-      // 썸네일과 원본 Blob 확인
-      const fullBlob = await getTravelPhotoBlob(log.id)
-      if (!fullBlob && !log.thumb) continue
-
-      const fullUpload = fullBlob
-        ? await photoClient.putBlobIfAbsent(paths.full, fullBlob, `Upload photo ${log.id}`)
-        : { skipped: true }
-      const thumbUpload = log.thumb
-        ? await photoClient.putBlobIfAbsent(paths.thumb, log.thumb, `Upload thumb ${log.id}`)
-        : { skipped: true }
-
-      if (fullUpload.skipped && thumbUpload.skipped) {
-        skipped++
-      } else {
-        uploaded++
+      if (changed || (entries.length && !log.photos?.length)) {
+        log.photos = entries
+        log.photo = photoMirror(entries[0])
+        await putTravelLogRaw(log)
       }
-
-      log.photo = {
-        ...paths,
-        fullUrl: photoClient.rawUrl(paths.full),
-        thumbUrl: photoClient.rawUrl(paths.thumb),
-      }
-      await putTravelLogRaw(log)
     }
 
     return { uploaded, skipped }
+  }
+
+  /** 교체·삭제된 사진 파일을 photo-repo 에서 지운다. 성공한 경로만 대기 목록에서 뺀다. */
+  async function removeDeletedPhotos(photoClient) {
+    if (!photoClient) return 0
+    const logs = await getAllTravelLogsRaw()
+    // 다른 기기의 더 새 기록이 아직 그 사진을 쓰고 있으면 지우지 않는다.
+    const inUse = new Set(
+      logs
+        .filter((l) => !l.deleted)
+        .flatMap((l) => photoList(l).flatMap((p) => [p.full, p.thumb]))
+        .filter(Boolean),
+    )
+    let removed = 0
+    for (const log of logs) {
+      const pending = log.pendingDeletes ?? []
+      if (!pending.length) continue
+      const left = []
+      for (const path of pending) {
+        if (inUse.has(path)) continue
+        try {
+          if (await photoClient.deleteFile(path, `Delete photo ${path}`)) removed++
+        } catch {
+          left.push(path) // 다음 동기화 때 다시 시도
+        }
+      }
+      await putTravelLogRaw({ ...log, pendingDeletes: left })
+    }
+    return removed
   }
 
   /**
@@ -136,7 +203,7 @@ export function createSyncEngine(getSettings) {
     for (const r of remote.logs) {
       const local = localMap.get(r.id)
       if (local && (local.updatedAt || '') >= (r.updatedAt || '')) continue
-      await putTravelLogRaw({ ...(local || {}), ...r, thumb: local?.thumb || null })
+      await putTravelLogRaw(mergeRemote(local, r))
       pulled++
     }
 
@@ -213,9 +280,13 @@ export function createSyncEngine(getSettings) {
       for (const r of merged?.logs ?? []) {
         const local = currentLocal.get(r.id)
         if (local && (local.updatedAt || '') >= (r.updatedAt || '')) continue
-        await putTravelLogRaw({ ...(local || {}), ...r, thumb: local?.thumb || null })
+        await putTravelLogRaw(mergeRemote(local, r))
         pulled++
       }
+
+      // 4. 새 JSON 이 더는 가리키지 않게 된 뒤에 옛 사진 파일을 지운다.
+      //    먼저 지우면 커밋이 실패했을 때 공개 페이지에 깨진 사진이 남는다.
+      photoStats.removed = await removeDeletedPhotos(photoClient)
 
       const syncTime = new Date().toISOString()
       await setLastSyncedAt(syncTime)

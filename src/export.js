@@ -5,8 +5,8 @@
  * 원활한 데이터 이관(Migration)을 지원합니다.
  */
 
-import { getAllTravelLogs, getTravelPhotoBlob, saveTravelLog } from './store.js'
-import { exportToDbSchema, CATEGORIES } from './schema.js'
+import { getAllTravelLogs, getPhotoBlobs, saveTravelLog } from './store.js'
+import { exportToDbSchema, CATEGORIES, photoList } from './schema.js'
 
 /**
  * JSON 파일로 다운로드 (DB 이관용 표준 덤프)
@@ -91,11 +91,11 @@ export async function exportToZip() {
   )
 
   for (const log of logs) {
-    const photoBlob = await getTravelPhotoBlob(log.id)
-    if (photoBlob) {
-      const buffer = new Uint8Array(await photoBlob.arrayBuffer())
-      const year = (log.visitedAt || 'misc').slice(0, 4)
-      zipEntries[`photos/${year}/${log.id}.jpg`] = buffer
+    const year = (log.visitedAt || 'misc').slice(0, 4)
+    for (const entry of photoList(log)) {
+      const photoBlob = (await getPhotoBlobs(entry.id))?.blob
+      if (!photoBlob) continue
+      zipEntries[`photos/${year}/${entry.id}.jpg`] = new Uint8Array(await photoBlob.arrayBuffer())
     }
   }
 

@@ -141,11 +141,13 @@ async function main() {
     }
   }
 
-  function openEditorModal({ file = null, initialData = null } = {}) {
+  /** 여러 장을 고르면 한 기록에 담는다. 첫 장이 대표 사진(위치·일시 기준)이다. */
+  function openEditorModal({ files = [], initialData = null } = {}) {
     openTravelEditor({
-      file,
+      files,
       initialData,
       mapView,
+      getPhotoUrl: photoUrlResolver,
       onSaved: () => {
         refreshData()
         triggerAutoSync()
@@ -153,25 +155,10 @@ async function main() {
     })
   }
 
-  fileInput.onchange = async () => {
+  fileInput.onchange = () => {
     const files = Array.from(fileInput.files || [])
     fileInput.value = ''
-    if (!files.length) return
-
-    for (const file of files) {
-      await new Promise((resolve) => {
-        openTravelEditor({
-          file,
-          mapView,
-          onSaved: () => {
-            refreshData()
-            triggerAutoSync()
-            resolve()
-          },
-          onCancelled: () => resolve(),
-        })
-      })
-    }
+    if (files.length) openEditorModal({ files })
   }
 
   // 사이드바 피드 초기화
@@ -296,25 +283,11 @@ async function main() {
 
   // 드래그 앤 드롭 업로드
   window.addEventListener('dragover', (e) => e.preventDefault())
-  window.addEventListener('drop', async (e) => {
+  window.addEventListener('drop', (e) => {
     e.preventDefault()
     if (!isAdmin) return
     const files = Array.from(e.dataTransfer?.files || []).filter((f) => f.type.startsWith('image/'))
-    if (!files.length) return
-
-    for (const file of files) {
-      await new Promise((resolve) => {
-        openTravelEditor({
-          file,
-          mapView,
-          onSaved: () => {
-            refreshData()
-            resolve()
-          },
-          onCancelled: () => resolve(),
-        })
-      })
-    }
+    if (files.length) openEditorModal({ files })
   })
 }
 

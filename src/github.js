@@ -211,6 +211,27 @@ export function createClient(cfg) {
       return { skipped: false, path }
     },
 
+    /**
+     * 파일을 지운다. 이미 없으면 아무것도 하지 않는다.
+     * @returns {Promise<boolean>} 실제로 지웠으면 true
+     */
+    async deleteFile(path, message) {
+      const sha = await this.headSha(path)
+      if (!sha) return false
+      try {
+        await api(contentsPath(path), {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message, sha, branch }),
+        })
+        return true
+      } catch (e) {
+        // 확인과 삭제 사이에 이미 지워졌거나 바뀌었다 — 다음 동기화가 다시 본다.
+        if (e.status === 404 || e.status === 409) return false
+        throw e
+      }
+    },
+
     /** 토큰이 가리키는 사용자. */
     async whoami() {
       if (!cfg.token) throw new GitHubError('토큰이 없습니다', 401, null)

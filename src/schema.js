@@ -83,9 +83,39 @@ export function createTravelLogRecord(input = {}) {
         : [],
 
     // 6. 미디어 저장 정보
+    //    photos: [{ id, full, thumb, fullUrl, thumbUrl }] — 첫 장이 대표 사진
+    //    photo:  photos[0] 의 원격 경로 사본 (이전 버전 데이터·지도 마커 호환용)
+    //    thumb:  대표 사진 썸네일 Blob (로컬 전용, 원격 JSON 에는 안 나감)
+    //    pendingDeletes: 사진 리포에서 지워야 할 경로 (로컬 전용, 동기화 때 처리)
+    photos: Array.isArray(input.photos) ? input.photos : [],
     photo: input.photo || null,
     thumb: input.thumb || null,
+    pendingDeletes: Array.isArray(input.pendingDeletes) ? input.pendingDeletes : [],
   }
+}
+
+export const MAX_PHOTOS = 10
+
+/**
+ * 기록의 사진 목록을 정규화해 돌려준다. 여러 장 지원 이전 데이터는 `photo` 하나뿐이고,
+ * 그 사진의 로컬 Blob 키와 원격 파일명은 기록 id 였다.
+ * @returns {Array<{id: string, full?: string, thumb?: string, fullUrl?: string, thumbUrl?: string}>}
+ */
+export function photoList(log) {
+  if (!log) return []
+  if (Array.isArray(log.photos) && log.photos.length) return log.photos
+  const p = log.photo
+  if (p && typeof p === 'object') return [{ ...p, id: log.id }]
+  if (typeof p === 'string') return [{ id: log.id, fullUrl: p, thumbUrl: p }]
+  if (log.thumb) return [{ id: log.id }]
+  return []
+}
+
+/** 원격 경로 필드만 남긴 대표 사진 사본 (`log.photo`) */
+export function photoMirror(entry) {
+  if (!entry?.full && !entry?.fullUrl) return null
+  const { id, ...rest } = entry
+  return rest
 }
 
 /** UUID v4 생성 */
@@ -100,7 +130,7 @@ export function generateId() {
  */
 export function exportToDbSchema(logs = []) {
   return logs.map((log) => {
-    const { thumb, ...rest } = log
+    const { thumb, pendingDeletes, ...rest } = log
     return rest
   })
 }
