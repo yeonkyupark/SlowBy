@@ -47,30 +47,20 @@ Content-Type 을 정하는데, `.webp` 는 `application/octet-stream` + `nosniff
 4. 용량: 2048px WebP 는 장당 약 200KB. 모든 사진에 만들면 저장소가 약 4배로 늘어나므로,
    필요하면 대표 사진에만 만드는 방안도 고려한다.
 
-## 남은 작업 2 — 이미 올라간 원본 정리
+## 완료 — 이미 올라간 원본 정리 (2026-10-17)
 
-**현재**: 이번 변경 이전에 올린 사진은 원본(3~5MB, EXIF·GPS 포함 가능)이 photo-repo 에 그대로 있다.
-2026-10-17 기준 photo-repo 는 22개 파일, 약 29MB 다. 예를 들어 GPS 가 들어 있는 WebP 원본
-(96,546바이트)이 그대로 공개되어 있다.
+이번 변경 전에 올린 원본(3~5MB, 일부는 EXIF·GPS 포함)과 쓰지 않는 파일을 정리했다.
 
-**방법**
-1. **최신 상태 축소 (일회성 스크립트)**
-   - `public/data/travel_logs.json` 에서 모든 `photos[].full` 경로를 모은다.
-   - 각 파일을 내려받아 1024px 를 넘거나 EXIF 가 있으면 1024px WebP 80% 로 다시 인코딩해
-     **같은 경로에** 덮어쓴다 (PUT 할 때 기존 sha 를 함께 보낸다).
-   - 썸네일도 같은 방식으로 처리한다.
-   - 브라우저 canvas 와 결과를 맞추려면 Playwright 로 앱의 `processImage()` 를 그대로 돌리거나,
-     Node 에서 `sharp` 로 `resize(1024, 1024, { fit: 'inside' }).webp({ quality: 80 })` 를 쓴다.
-     `sharp` 는 기본적으로 메타데이터를 제거한다.
-   - 실행 전에 photo-repo 를 백업(clone)한다.
-2. **Git 이력 정리 (GPS 노출을 완전히 없애려면 필요)**
-   - 같은 경로에 덮어써도 옛 원본은 Git 이력에 남아 누구나 받을 수 있다. 리포 용량도 줄지 않는다.
-   - 방법 A — 새 리포로 옮기기: 축소한 파일만 담은 새 리포(`photo-repo-v2`)를 만들고, 설정의 사진
-     저장소를 바꾼 뒤 JSON 의 `fullUrl`/`thumbUrl` 를 새 리포로 고친다. 옛 리포는 삭제하거나 비공개로 돌린다.
-   - 방법 B — 이력 다시 쓰기: `git filter-repo` 등으로 이력을 정리하고 force push 한다. 다른 곳에 clone 이
-     있으면 다시 받아야 한다. GitHub 캐시에서 옛 객체가 바로 사라지지 않을 수 있으므로, 민감하다면
-     방법 A 가 더 확실하다.
-3. 정리 후 photo-repo 용량을 확인한다 (`GET /repos/{owner}/photo-repo` 의 `size`, KB 단위).
+- `travel_logs.json` 이 가리키는 사진 4장과 썸네일 4장만 남기고, 앱과 같은 방식(Chrome canvas,
+  1024px/280px WebP 80%)으로 다시 인코딩해 **같은 경로에** 넣었다. 그래서 JSON 은 고치지 않았다.
+- 어디서도 참조하지 않던 파일 14개는 삭제했다.
+- 정리한 파일만 담은 커밋 1개로 photo-repo `main` 을 덮어써(force push) 이전 이력을 지웠다.
+  파일 22개 약 29MB → 8개 약 300KB.
+- GitHub 이 이력에서 빠진 옛 객체를 바로 지우지는 않는다. 커밋 sha 를 아는 사람은 한동안 접근할 수
+  있으니, 완전한 삭제가 필요하면 GitHub 지원팀에 캐시 정리를 요청한다.
+
+같은 정리가 다시 필요하면 위 순서를 따른다: 참조 경로 수집 → 다시 인코딩 → 새 단일 커밋으로 force push.
+실행 전에는 반드시 리포를 백업한다(`git bundle create backup.bundle --all`).
 
 ## 참고 — 알려진 제약
 
