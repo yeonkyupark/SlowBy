@@ -1,13 +1,13 @@
 {
  "version": 1,
  "appName": "SlowBy",
- "updatedAt": "2026-10-17T10:25:14.144Z",
+ "updatedAt": "2026-10-17T10:30:55.790Z",
  "logs": [
   {
    "id": "04e4d9e5-ca53-45ee-823e-9d46e35963f5",
    "createdAt": "2026-10-17T10:24:39.542Z",
-   "updatedAt": "2026-10-17T10:24:50.807Z",
-   "deleted": false,
+   "updatedAt": "2026-10-17T10:30:52.943Z",
+   "deleted": true,
    "visitedAt": "2026-10-17T19:24",
    "category": "spot",
    "title": "내부포 정류소 (부포 사거리)",
