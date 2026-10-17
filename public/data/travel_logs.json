@@ -1,7 +1,7 @@
 {
  "version": 1,
  "appName": "SlowBy",
- "updatedAt": "2026-10-17T12:07:52.578Z",
+ "updatedAt": "2026-10-17T12:41:12.811Z",
  "logs": [
   {
    "id": "04e4d9e5-ca53-45ee-823e-9d46e35963f5",
@@ -62,11 +62,11 @@
   {
    "id": "8293674c-516d-4400-937a-1af4a26a3d09",
    "createdAt": "2026-10-16T23:35:34.520Z",
-   "updatedAt": "2026-10-16T23:35:53.236Z",
+   "updatedAt": "2026-10-17T12:41:11.774Z",
    "deleted": false,
    "visitedAt": "2026-10-17T08:35",
-   "category": "spot",
-   "title": "비산동 산책길",
+   "category": "activity",
+   "title": "비산나루터 산책길",
    "memo": "",
    "rating": 0,
    "lat": 36.1257894,
@@ -80,12 +80,6 @@
    "companion": "",
    "weather": "",
    "tags": [],
-   "photo": {
-    "full": "travel/2026/8293674c-516d-4400-937a-1af4a26a3d09.jpg",
-    "thumb": "travel/2026/8293674c-516d-4400-937a-1af4a26a3d09_t.jpg",
-    "fullUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/8293674c-516d-4400-937a-1af4a26a3d09.jpg",
-    "thumbUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/8293674c-516d-4400-937a-1af4a26a3d09_t.jpg"
-   },
    "photos": [
     {
      "full": "travel/2026/8293674c-516d-4400-937a-1af4a26a3d09.jpg",
@@ -94,7 +88,13 @@
      "thumbUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/8293674c-516d-4400-937a-1af4a26a3d09_t.jpg",
      "id": "8293674c-516d-4400-937a-1af4a26a3d09"
     }
-   ]
+   ],
+   "photo": {
+    "full": "travel/2026/8293674c-516d-4400-937a-1af4a26a3d09.jpg",
+    "thumb": "travel/2026/8293674c-516d-4400-937a-1af4a26a3d09_t.jpg",
+    "fullUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/8293674c-516d-4400-937a-1af4a26a3d09.jpg",
+    "thumbUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/8293674c-516d-4400-937a-1af4a26a3d09_t.jpg"
+   }
   },
   {
    "id": "f8ccaa7e-67ce-4c9a-99cb-64c10252c605",
