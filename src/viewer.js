@@ -6,6 +6,13 @@ import { CATEGORIES, photoList } from './schema.js'
 import { getPhotoBlobs, deleteTravelLog } from './store.js'
 import { iconEl, iconHtml } from './icons.js'
 
+/** 사용자 입력·사진 메타데이터는 HTML 로 해석되지 않게 textContent 로 넣는다. */
+function textSpan(text) {
+  const span = document.createElement('span')
+  span.textContent = text
+  return span
+}
+
 export function openTravelViewer({
   log,
   allLogs = [],
@@ -262,7 +269,7 @@ export function openTravelViewer({
     if (currentLog.address) {
       const addrEl = document.createElement('span')
       addrEl.className = 'viewer-meta-item'
-      addrEl.innerHTML = `${iconHtml('location', 13)} <span>${currentLog.address}</span>`
+      addrEl.append(iconEl('location', 13), textSpan(currentLog.address))
       metaBar.append(addrEl)
     }
 
@@ -281,13 +288,13 @@ export function openTravelViewer({
     if (currentLog.weather) {
       const weatherChip = document.createElement('span')
       weatherChip.className = 'v-chip'
-      weatherChip.innerHTML = `${iconHtml('sun', 12)} <span>${currentLog.weather}</span>`
+      weatherChip.append(iconEl('sun', 12), textSpan(currentLog.weather))
       chipsBar.append(weatherChip)
     }
     if (currentLog.companion) {
       const compChip = document.createElement('span')
       compChip.className = 'v-chip'
-      compChip.innerHTML = `${iconHtml('users', 12)} <span>${currentLog.companion}</span>`
+      compChip.append(iconEl('users', 12), textSpan(currentLog.companion))
       chipsBar.append(compChip)
     }
     if (chipsBar.children.length) body.append(chipsBar)

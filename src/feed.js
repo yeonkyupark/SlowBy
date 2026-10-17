@@ -368,7 +368,9 @@ export function createSidebar({
         if (log.address) {
           const loc = document.createElement('span')
           loc.className = 'card-loc'
-          loc.innerHTML = `${iconHtml('location', 11)} <span>${log.address.split(' ').slice(0, 3).join(' ')}</span>`
+          const addr = document.createElement('span')
+          addr.textContent = log.address.split(' ').slice(0, 3).join(' ')
+          loc.append(iconEl('location', 11), addr)
           footRow.append(loc)
         }
 

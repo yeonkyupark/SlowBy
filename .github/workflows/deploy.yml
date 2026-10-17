@@ -3,6 +3,9 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+    # 앱의 기록 동기화 커밋은 JSON 만 바꾼다. 앱은 JSON 을 raw 에서 실행 중에 읽으므로 재배포가 필요 없다.
+    paths-ignore:
+      - 'public/data/**'
   workflow_dispatch:
 
 permissions:

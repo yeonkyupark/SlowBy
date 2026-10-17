@@ -167,7 +167,7 @@ export function openSettingsModal({ onSave, onCheck }) {
       }
       const res = await onCheck(cfg)
       statusBox.className = 'settings-status is-success'
-      statusBox.innerHTML = `연결 성공! (${res.login} 계정 인증됨 · 데이터 리포 '${cfg.repo}' 및 사진 리포 '${cfg.photoRepo}' 접근 가능)`
+      statusBox.textContent = `연결 성공! (${res.login} 계정 인증됨 · 데이터 리포 '${cfg.repo}' 및 사진 리포 '${cfg.photoRepo}' 접근 가능)`
     } catch (e) {
       statusBox.className = 'settings-status is-error'
       statusBox.textContent = `연결 실패: ${e.message}`
