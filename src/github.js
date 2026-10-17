@@ -125,7 +125,11 @@ export function createClient(cfg) {
     /** 쓰기에 필요한 현재 sha. 파일이 없으면 null. */
     async headSha(path) {
       try {
-        const r = await api(`${contentsPath(path)}?ref=${encodeURIComponent(branch)}`)
+        // no-store: 브라우저 HTTP 캐시(max-age=60)가 방금 올린 파일을 "없음"으로 답하면
+        // sha 없이 PUT 해서 422 "sha wasn't supplied" 가 난다.
+        const r = await api(`${contentsPath(path)}?ref=${encodeURIComponent(branch)}`, {
+          cache: 'no-store',
+        })
         return r?.sha ?? null
       } catch (e) {
         if (e.status === 404) return null
@@ -138,11 +142,17 @@ export function createClient(cfg) {
      * 그 사이 다른 곳에서 바뀌었으면 409 가 오고, 호출부가 다시 읽어 병합한다.
      */
     async putFile(path, base64, { message, sha }) {
-      return api(contentsPath(path), {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message, content: base64, branch, ...(sha ? { sha } : {}) }),
-      })
+      try {
+        return await api(contentsPath(path), {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message, content: base64, branch, ...(sha ? { sha } : {}) }),
+        })
+      } catch (e) {
+        // 어느 리포의 어느 파일에서 실패했는지 메시지에 남긴다.
+        if (e instanceof GitHubError) e.message = `${e.message} (${cfg.repo}/${path})`
+        throw e
+      }
     },
 
     putJson(path, value, opts) {
@@ -182,7 +192,14 @@ export function createClient(cfg) {
     async putBlobIfAbsent(path, blob, message) {
       const sha = await this.headSha(path)
       if (sha) return { skipped: true, path }
-      await this.putBlob(path, blob, { message })
+      try {
+        await this.putBlob(path, blob, { message })
+      } catch (e) {
+        // 확인과 쓰기 사이에 이미 생겼다(이전 동기화가 올렸거나 API 복제 지연).
+        // 사진은 한 번 올리면 바뀌지 않으므로 있는 것으로 충분하다.
+        if (e.status === 422 && /sha/i.test(e.message)) return { skipped: true, path }
+        throw e
+      }
       return { skipped: false, path }
     },
 
