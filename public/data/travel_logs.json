@@ -1,7 +1,7 @@
 {
  "version": 1,
  "appName": "SlowBy",
- "updatedAt": "2026-10-18T01:27:36.658Z",
+ "updatedAt": "2026-10-18T01:30:51.881Z",
  "logs": [
   {
    "id": "04e4d9e5-ca53-45ee-823e-9d46e35963f5",
@@ -82,6 +82,43 @@
    "tags": [],
    "photos": [],
    "photo": null
+  },
+  {
+   "id": "54f2990b-6856-485f-a065-1f071969de26",
+   "createdAt": "2026-10-18T01:30:21.325Z",
+   "updatedAt": "2026-10-18T01:30:46.569Z",
+   "deleted": false,
+   "visitedAt": "2026-10-03T14:07",
+   "category": "activity",
+   "title": "남파랑길 31코스 시점 (바다 휴게소)",
+   "memo": "",
+   "rating": 0,
+   "lat": 34.93684089972222,
+   "lng": 128.34743689972223,
+   "address": "",
+   "locationName": "",
+   "region": "",
+   "locationSource": "exif",
+   "cost": null,
+   "costCurrency": "KRW",
+   "companion": "",
+   "weather": "",
+   "tags": [],
+   "photos": [
+    {
+     "id": "dd826705-cf12-4f51-a685-c0c97d272191",
+     "full": "travel/2026/dd826705-cf12-4f51-a685-c0c97d272191.jpg",
+     "thumb": "travel/2026/dd826705-cf12-4f51-a685-c0c97d272191_t.jpg",
+     "fullUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/dd826705-cf12-4f51-a685-c0c97d272191.jpg",
+     "thumbUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/dd826705-cf12-4f51-a685-c0c97d272191_t.jpg"
+    }
+   ],
+   "photo": {
+    "full": "travel/2026/dd826705-cf12-4f51-a685-c0c97d272191.jpg",
+    "thumb": "travel/2026/dd826705-cf12-4f51-a685-c0c97d272191_t.jpg",
+    "fullUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/dd826705-cf12-4f51-a685-c0c97d272191.jpg",
+    "thumbUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/dd826705-cf12-4f51-a685-c0c97d272191_t.jpg"
+   }
   },
   {
    "id": "f7f887d0-85c0-4000-8a1e-a8ffbf6c4760",
