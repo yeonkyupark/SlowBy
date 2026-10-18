@@ -1,7 +1,7 @@
 {
  "version": 1,
  "appName": "SlowBy",
- "updatedAt": "2026-10-18T00:49:07.760Z",
+ "updatedAt": "2026-10-18T00:49:55.187Z",
  "logs": [
   {
    "id": "04e4d9e5-ca53-45ee-823e-9d46e35963f5",
@@ -62,8 +62,8 @@
   {
    "id": "8293674c-516d-4400-937a-1af4a26a3d09",
    "createdAt": "2026-10-16T23:35:34.520Z",
-   "updatedAt": "2026-10-17T12:41:11.774Z",
-   "deleted": false,
+   "updatedAt": "2026-10-18T00:49:36.212Z",
+   "deleted": true,
    "visitedAt": "2026-10-17T08:35",
    "category": "activity",
    "title": "비산나루터 산책길",
@@ -80,27 +80,14 @@
    "companion": "",
    "weather": "",
    "tags": [],
-   "photos": [
-    {
-     "full": "travel/2026/8293674c-516d-4400-937a-1af4a26a3d09.jpg",
-     "thumb": "travel/2026/8293674c-516d-4400-937a-1af4a26a3d09_t.jpg",
-     "fullUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/8293674c-516d-4400-937a-1af4a26a3d09.jpg",
-     "thumbUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/8293674c-516d-4400-937a-1af4a26a3d09_t.jpg",
-     "id": "8293674c-516d-4400-937a-1af4a26a3d09"
-    }
-   ],
-   "photo": {
-    "full": "travel/2026/8293674c-516d-4400-937a-1af4a26a3d09.jpg",
-    "thumb": "travel/2026/8293674c-516d-4400-937a-1af4a26a3d09_t.jpg",
-    "fullUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/8293674c-516d-4400-937a-1af4a26a3d09.jpg",
-    "thumbUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/8293674c-516d-4400-937a-1af4a26a3d09_t.jpg"
-   }
+   "photos": [],
+   "photo": null
   },
   {
    "id": "f8ccaa7e-67ce-4c9a-99cb-64c10252c605",
    "createdAt": "2026-10-17T10:31:07.881Z",
-   "updatedAt": "2026-10-17T12:07:51.515Z",
-   "deleted": false,
+   "updatedAt": "2026-10-18T00:49:41.949Z",
+   "deleted": true,
    "visitedAt": "2026-10-03T08:16",
    "category": "activity",
    "title": "부포 사거리 (내부포 정류소)",
@@ -117,27 +104,14 @@
    "companion": "",
    "weather": "",
    "tags": [],
-   "photos": [
-    {
-     "full": "travel/2026/f8ccaa7e-67ce-4c9a-99cb-64c10252c605.jpg",
-     "thumb": "travel/2026/f8ccaa7e-67ce-4c9a-99cb-64c10252c605_t.jpg",
-     "fullUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/f8ccaa7e-67ce-4c9a-99cb-64c10252c605.jpg",
-     "thumbUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/f8ccaa7e-67ce-4c9a-99cb-64c10252c605_t.jpg",
-     "id": "f8ccaa7e-67ce-4c9a-99cb-64c10252c605"
-    }
-   ],
-   "photo": {
-    "full": "travel/2026/f8ccaa7e-67ce-4c9a-99cb-64c10252c605.jpg",
-    "thumb": "travel/2026/f8ccaa7e-67ce-4c9a-99cb-64c10252c605_t.jpg",
-    "fullUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/f8ccaa7e-67ce-4c9a-99cb-64c10252c605.jpg",
-    "thumbUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/f8ccaa7e-67ce-4c9a-99cb-64c10252c605_t.jpg"
-   }
+   "photos": [],
+   "photo": null
   },
   {
    "id": "e0294dd6-bdd2-4352-8674-2c812148aa81",
    "createdAt": "2026-08-29T16:14:45.722Z",
-   "updatedAt": "2026-08-29T16:15:44.323Z",
-   "deleted": false,
+   "updatedAt": "2026-10-18T00:49:46.828Z",
+   "deleted": true,
    "visitedAt": "2026-08-29T14:08",
    "category": "spot",
    "title": "포항시립미술관",
@@ -154,27 +128,14 @@
    "companion": "",
    "weather": "",
    "tags": [],
-   "photo": {
-    "full": "travel/2026/e0294dd6-bdd2-4352-8674-2c812148aa81.jpg",
-    "thumb": "travel/2026/e0294dd6-bdd2-4352-8674-2c812148aa81_t.jpg",
-    "fullUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/e0294dd6-bdd2-4352-8674-2c812148aa81.jpg",
-    "thumbUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/e0294dd6-bdd2-4352-8674-2c812148aa81_t.jpg"
-   },
-   "photos": [
-    {
-     "full": "travel/2026/e0294dd6-bdd2-4352-8674-2c812148aa81.jpg",
-     "thumb": "travel/2026/e0294dd6-bdd2-4352-8674-2c812148aa81_t.jpg",
-     "fullUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/e0294dd6-bdd2-4352-8674-2c812148aa81.jpg",
-     "thumbUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/e0294dd6-bdd2-4352-8674-2c812148aa81_t.jpg",
-     "id": "e0294dd6-bdd2-4352-8674-2c812148aa81"
-    }
-   ]
+   "photo": null,
+   "photos": []
   },
   {
    "id": "3b8dfd7b-d774-46df-9cc3-b1abf83f693d",
    "createdAt": "2026-08-29T15:50:42.122Z",
-   "updatedAt": "2026-08-29T15:51:37.579Z",
-   "deleted": false,
+   "updatedAt": "2026-10-18T00:49:51.858Z",
+   "deleted": true,
    "visitedAt": "2026-08-29T13:20",
    "category": "spot",
    "title": "Space Walk",
@@ -191,21 +152,8 @@
    "companion": "",
    "weather": "",
    "tags": [],
-   "photo": {
-    "full": "travel/2026/3b8dfd7b-d774-46df-9cc3-b1abf83f693d.jpg",
-    "thumb": "travel/2026/3b8dfd7b-d774-46df-9cc3-b1abf83f693d_t.jpg",
-    "fullUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/3b8dfd7b-d774-46df-9cc3-b1abf83f693d.jpg",
-    "thumbUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/3b8dfd7b-d774-46df-9cc3-b1abf83f693d_t.jpg"
-   },
-   "photos": [
-    {
-     "full": "travel/2026/3b8dfd7b-d774-46df-9cc3-b1abf83f693d.jpg",
-     "thumb": "travel/2026/3b8dfd7b-d774-46df-9cc3-b1abf83f693d_t.jpg",
-     "fullUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/3b8dfd7b-d774-46df-9cc3-b1abf83f693d.jpg",
-     "thumbUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/3b8dfd7b-d774-46df-9cc3-b1abf83f693d_t.jpg",
-     "id": "3b8dfd7b-d774-46df-9cc3-b1abf83f693d"
-    }
-   ]
+   "photo": null,
+   "photos": []
   }
  ]
 }
