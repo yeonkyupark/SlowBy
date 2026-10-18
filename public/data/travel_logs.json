@@ -1,7 +1,7 @@
 {
  "version": 1,
  "appName": "SlowBy",
- "updatedAt": "2026-10-18T01:21:20.667Z",
+ "updatedAt": "2026-10-18T01:27:36.658Z",
  "logs": [
   {
    "id": "04e4d9e5-ca53-45ee-823e-9d46e35963f5",
@@ -118,6 +118,43 @@
     "thumb": "travel/2026/f0a57a71-afef-47ce-8f81-1be06ceb1c30_t.jpg",
     "fullUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/f0a57a71-afef-47ce-8f81-1be06ceb1c30.jpg",
     "thumbUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/f0a57a71-afef-47ce-8f81-1be06ceb1c30_t.jpg"
+   }
+  },
+  {
+   "id": "22938fe9-8cb8-4953-8199-ddfe34962196",
+   "createdAt": "2026-10-18T01:27:11.631Z",
+   "updatedAt": "2026-10-18T01:27:31.969Z",
+   "deleted": false,
+   "visitedAt": "2026-10-03T09:31",
+   "category": "activity",
+   "title": "통영종합버스터미널",
+   "memo": "",
+   "rating": 0,
+   "lat": 34.88495759972222,
+   "lng": 128.4172647997222,
+   "address": "",
+   "locationName": "",
+   "region": "",
+   "locationSource": "exif",
+   "cost": null,
+   "costCurrency": "KRW",
+   "companion": "",
+   "weather": "",
+   "tags": [],
+   "photos": [
+    {
+     "id": "f9ad43b5-8b00-4a5f-92e8-ad87f9038df2",
+     "full": "travel/2026/f9ad43b5-8b00-4a5f-92e8-ad87f9038df2.jpg",
+     "thumb": "travel/2026/f9ad43b5-8b00-4a5f-92e8-ad87f9038df2_t.jpg",
+     "fullUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/f9ad43b5-8b00-4a5f-92e8-ad87f9038df2.jpg",
+     "thumbUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/f9ad43b5-8b00-4a5f-92e8-ad87f9038df2_t.jpg"
+    }
+   ],
+   "photo": {
+    "full": "travel/2026/f9ad43b5-8b00-4a5f-92e8-ad87f9038df2.jpg",
+    "thumb": "travel/2026/f9ad43b5-8b00-4a5f-92e8-ad87f9038df2_t.jpg",
+    "fullUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/f9ad43b5-8b00-4a5f-92e8-ad87f9038df2.jpg",
+    "thumbUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/f9ad43b5-8b00-4a5f-92e8-ad87f9038df2_t.jpg"
    }
   },
   {
