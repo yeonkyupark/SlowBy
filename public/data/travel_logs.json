@@ -1,7 +1,7 @@
 {
  "version": 1,
  "appName": "SlowBy",
- "updatedAt": "2026-10-18T00:49:55.187Z",
+ "updatedAt": "2026-10-18T00:53:01.782Z",
  "logs": [
   {
    "id": "04e4d9e5-ca53-45ee-823e-9d46e35963f5",
@@ -106,6 +106,43 @@
    "tags": [],
    "photos": [],
    "photo": null
+  },
+  {
+   "id": "cc084c9b-f6f5-49ab-9ce6-e8a8d44d7c2a",
+   "createdAt": "2026-10-18T00:52:18.900Z",
+   "updatedAt": "2026-10-18T00:52:43.481Z",
+   "deleted": false,
+   "visitedAt": "2026-10-03T08:16",
+   "category": "activity",
+   "title": "부포 사거리(내부포 정류소)",
+   "memo": "",
+   "rating": 0,
+   "lat": 34.988539,
+   "lng": 128.23799989999998,
+   "address": "",
+   "locationName": "",
+   "region": "",
+   "locationSource": "exif",
+   "cost": null,
+   "costCurrency": "KRW",
+   "companion": "",
+   "weather": "",
+   "tags": [],
+   "photos": [
+    {
+     "id": "2256c44d-5651-4386-a458-0ae9a8680ea8",
+     "full": "travel/2026/2256c44d-5651-4386-a458-0ae9a8680ea8.jpg",
+     "thumb": "travel/2026/2256c44d-5651-4386-a458-0ae9a8680ea8_t.jpg",
+     "fullUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/2256c44d-5651-4386-a458-0ae9a8680ea8.jpg",
+     "thumbUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/2256c44d-5651-4386-a458-0ae9a8680ea8_t.jpg"
+    }
+   ],
+   "photo": {
+    "full": "travel/2026/2256c44d-5651-4386-a458-0ae9a8680ea8.jpg",
+    "thumb": "travel/2026/2256c44d-5651-4386-a458-0ae9a8680ea8_t.jpg",
+    "fullUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/2256c44d-5651-4386-a458-0ae9a8680ea8.jpg",
+    "thumbUrl": "https://raw.githubusercontent.com/yeonkyupark/photo-repo/main/travel/2026/2256c44d-5651-4386-a458-0ae9a8680ea8_t.jpg"
+   }
   },
   {
    "id": "e0294dd6-bdd2-4352-8674-2c812148aa81",
