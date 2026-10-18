@@ -12,6 +12,8 @@
 const API = 'https://api.github.com'
 const RAW = 'https://raw.githubusercontent.com'
 
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
+
 const HEADERS = {
   Accept: 'application/vnd.github+json',
   'X-GitHub-Api-Version': '2022-11-28',
@@ -200,19 +202,25 @@ export function createClient(cfg) {
     async putBlobIfAbsent(path, blob, message) {
       const sha = await this.headSha(path)
       if (sha) return { skipped: true, path }
-      try {
-        await this.putBlob(path, blob, { message })
-      } catch (e) {
-        // 확인과 쓰기 사이에 이미 생겼다(이전 동기화가 올렸거나 API 복제 지연).
-        // 사진은 한 번 올리면 바뀌지 않으므로 있는 것으로 충분하다.
-        if (e.status === 422 && /sha/i.test(e.message)) return { skipped: true, path }
-        throw e
+      for (let attempt = 0; ; attempt++) {
+        try {
+          await this.putBlob(path, blob, { message })
+          return { skipped: false, path }
+        } catch (e) {
+          // 확인과 쓰기 사이에 이미 생겼다(이전 동기화가 올렸거나 API 복제 지연).
+          // 사진은 한 번 올리면 바뀌지 않으므로 있는 것으로 충분하다.
+          if (e.status === 422 && /sha/i.test(e.message)) return { skipped: true, path }
+          // 409: 다른 기기가 같은 브랜치에 동시에 커밋해 브랜치 끝이 움직였다.
+          // 파일 경로는 겹치지 않으므로 잠시 뒤 그대로 다시 보내면 된다.
+          if (e.status !== 409 || attempt >= 2) throw e
+          await sleep(1000 * 2 ** attempt)
+        }
       }
-      return { skipped: false, path }
     },
 
     /**
      * 파일을 지운다. 이미 없으면 아무것도 하지 않는다.
+     * 409(다른 기기의 동시 커밋)는 던진다 — 호출부가 대기 목록에 남겨 다음 동기화 때 다시 지운다.
      * @returns {Promise<boolean>} 실제로 지웠으면 true
      */
     async deleteFile(path, message) {
@@ -226,8 +234,8 @@ export function createClient(cfg) {
         })
         return true
       } catch (e) {
-        // 확인과 삭제 사이에 이미 지워졌거나 바뀌었다 — 다음 동기화가 다시 본다.
-        if (e.status === 404 || e.status === 409) return false
+        // 확인과 삭제 사이에 이미 지워졌다.
+        if (e.status === 404) return false
         throw e
       }
     },

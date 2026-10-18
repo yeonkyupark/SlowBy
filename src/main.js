@@ -12,6 +12,7 @@ import { openTravelViewer } from './viewer.js'
 import { createSidebar } from './feed.js'
 import { createClient } from './github.js'
 import { iconEl, iconHtml } from './icons.js'
+import { ensureLatestVersion, cleanVersionParam } from './version.js'
 
 function renderShell(isAdmin) {
   const app = document.getElementById('app')
@@ -135,10 +136,20 @@ async function main() {
     return b
   })
 
-  const triggerAutoSync = () => {
-    if (isAdmin) {
-      syncEngine.runSync().then(() => refreshData()).catch((e) => console.warn('Auto sync skipped:', e.message))
-    }
+  /** 옛 코드로는 동기화하지 않는다. 새 버전이 있으면 다시 열고 false. */
+  async function readyToSync() {
+    const v = await ensureLatestVersion()
+    if (v === 'latest') return true
+    sidebar.setSyncStatus(
+      v === 'reloading' ? '새 버전으로 다시 불러오는 중…' : '새 버전 배포 중입니다. 잠시 후 다시 시도해주세요.',
+      v === 'stale',
+    )
+    return false
+  }
+
+  const triggerAutoSync = async () => {
+    if (!isAdmin || !(await readyToSync())) return
+    syncEngine.runSync().then(() => refreshData()).catch((e) => console.warn('Auto sync skipped:', e.message))
   }
 
   /** 여러 장을 고르면 한 기록에 담는다. 첫 장이 대표 사진(위치·일시 기준)이다. */
@@ -204,6 +215,7 @@ async function main() {
         alert('동기화는 관리자 토큰(PAT)이 설정되어 있어야 실행할 수 있습니다. ⚙️ 버튼을 눌러 설정해주세요.')
         return
       }
+      if (!(await readyToSync())) return
       sidebar.setSyncStatus('동기화 진행 중…')
       try {
         const res = await syncEngine.runSync()
@@ -264,6 +276,10 @@ async function main() {
     mapView.setLogs(logs)
     applyFilters()
   }
+
+  // 캐시된 옛 HTML 로 열렸으면 새 버전으로 다시 연다. 오프라인이어도 화면은 그대로 뜬다.
+  cleanVersionParam()
+  ensureLatestVersion()
 
   // 초기 로드
   await refreshData()
