@@ -75,7 +75,7 @@ function mergeRemote(local, remote) {
 export function createSyncEngine(getSettings) {
   const listeners = new Set()
   const emit = (state) => listeners.forEach((fn) => fn(state))
-  let isRunning = false
+  let running = null // 진행 중인 동기화 Promise — 겹쳐 들어온 호출은 이것을 함께 기다린다
 
   function getClients() {
     const s = getSettings()
@@ -231,10 +231,20 @@ export function createSyncEngine(getSettings) {
 
   /**
    * 관리자 동기화 (로컬 사진 photo-repo 푸시 -> travel_logs.json 커밋 -> 원격 변경점 풀)
+   *
+   * 이미 진행 중이면 새로 시작하지 않고 그 결과를 돌려준다. 저장 직후 자동 동기화가
+   * 도는 사이에 버튼을 눌러도 같은 결과(또는 같은 오류)를 받는다.
    */
-  async function runSync() {
-    if (isRunning) return null
-    isRunning = true
+  function runSync() {
+    if (!running) {
+      running = doSync().finally(() => {
+        running = null
+      })
+    }
+    return running
+  }
+
+  async function doSync() {
     emit({ phase: 'start' })
 
     try {
@@ -314,8 +324,6 @@ export function createSyncEngine(getSettings) {
     } catch (e) {
       emit({ phase: 'error', message: e.message })
       throw e
-    } finally {
-      isRunning = false
     }
   }
 
@@ -328,7 +336,7 @@ export function createSyncEngine(getSettings) {
     },
     getLastSyncedAt,
     get isRunning() {
-      return isRunning
+      return running !== null
     },
   }
 }
